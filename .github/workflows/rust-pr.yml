@@ -21,6 +21,11 @@ jobs:
 
         steps:
           - uses: actions/checkout@v4
+          - name: Get language version
+            id: get_lang_version
+            run: |
+                  v=$(cat .rust-version)
+                  echo "lang_version=$v" >> $GITHUB_OUTPUT
           - name: Install Rust
             # Or @nightly if you want
             uses: dtolnay/rust-toolchain@stable
@@ -28,7 +33,7 @@ jobs:
             with:
               # Make Rust compile to our target (defined in the matrix)
               targets: ${{ matrix.target }}
-
+              # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
           - name: Build
             uses: actions-rs/cargo@v1
             with:
