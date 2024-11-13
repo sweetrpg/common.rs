@@ -28,21 +28,25 @@ jobs:
 
         steps:
           - uses: actions/checkout@v4
+          - name: Get language version
+            id: get_lang_version
+            run: |
+                  v=$(cat .python-version)
+                  echo "lang_version=$v" >> $GITHUB_OUTPUT
           - name: Install Rust
             # Or @nightly if you want
-            uses: dtolnay/rust-toolchain@stable
+            uses: dtolnay/rust-toolchain@${{ steps.get_lang_version.outputs.lang_version }}
             # Arguments to pass in
             with:
               # Make Rust compile to our target (defined in the matrix)
               targets: ${{ matrix.target }}
-
+              # rust-version: ${{ steps.get_lang_version.outputs.lang_version }}
           - name: Build
             uses: actions-rs/cargo@v1
             with:
               use-cross: true
               command: build
               args: --verbose --release --target ${{ matrix.target }}
-
           - name: publish-docs
             uses: peaceiris/actions-gh-pages@v4
             with:
